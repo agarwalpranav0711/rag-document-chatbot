@@ -1,44 +1,87 @@
 # Simple RAG System (LangChain + OpenRouter)
 
-This project implements a basic Retrieval-Augmented Generation (RAG) pipeline.
+This project demonstrates a basic **Retrieval-Augmented Generation (RAG)** pipeline using LangChain, FAISS, and an LLM accessed via OpenRouter.
 
 ## Features
 
-- Load document
-- Split text into chunks
-- Create embeddings
-- Store vectors using FAISS
-- Retrieve relevant context
-- Generate answers using LLM
+* Load documents from a text file
+* Split text into smaller chunks
+* Generate embeddings
+* Store embeddings in a FAISS vector database
+* Retrieve relevant context for a user query
+* Generate answers using an LLM
 
 ## Tech Stack
 
-- Python
-- LangChain
-- FAISS
-- OpenRouter
-- Llama 3
+* Python
+* LangChain
+* FAISS
+* OpenRouter
+* Llama 3
 
-## How it Works
+## Project Structure
 
-User Question  
-↓  
-Vector Search  
-↓  
-Relevant Context  
-↓  
-LLM Generates Answer
+```
+rag-document-chatbot
+│
+├── rag_pipeline.py
+├── data.txt
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
 
-## Run the Project
+## How It Works
+
+```
+User Question
+      ↓
+Vector Search (FAISS)
+      ↓
+Retrieve Relevant Text
+      ↓
+Send Context + Question to LLM
+      ↓
+Generate Answer
+```
+
+## Installation
+
+Clone the repository:
+
+```
+git clone https://github.com/agarwalpranav0711/rag-document-chatbot.git
+cd rag-document-chatbot
+```
 
 Install dependencies:
 
+```
 pip install -r requirements.txt
+```
 
-Create `.env` file:
+Create a `.env` file:
 
-OPENROUTER_API_KEY=your_key_here
+```
+OPENROUTER_API_KEY=your_api_key_here
+```
 
-Run:
+## Run the Project
 
-python main.py
+```
+python rag_pipeline.py
+```
+
+## Example Query
+
+Question:
+
+```
+What is machine learning?
+```
+
+Answer:
+
+```
+Machine learning is a subset of AI that allows systems to learn from data.
+```
