@@ -24,7 +24,7 @@ This project demonstrates a basic **Retrieval-Augmented Generation (RAG)** pipel
 ```
 rag-document-chatbot
 │
-├── rag_pipeline.py
+├── main.py
 ├── data.txt
 ├── requirements.txt
 ├── README.md
@@ -69,7 +69,7 @@ OPENROUTER_API_KEY=your_api_key_here
 ## Run the Project
 
 ```
-python rag_pipeline.py
+python main.py
 ```
 
 ## Example Query

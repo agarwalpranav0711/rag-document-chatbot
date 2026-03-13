@@ -7,6 +7,10 @@ from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 
 
+# -----------------------------
+# Helper Functions
+# -----------------------------
+
 def load_documents(file_path: str):
     """Load documents from a text file."""
     loader = TextLoader(file_path)
@@ -41,41 +45,64 @@ def create_llm(api_key):
     )
 
 
-def main():
-    load_dotenv()
-    api_key = os.getenv("OPENROUTER_API_KEY")
+# -----------------------------
+# Initialize RAG System
+# -----------------------------
 
-    # Load and process document
-    documents = load_documents("data.txt")
-    docs = split_documents(documents)
+load_dotenv()
+api_key = os.getenv("OPENROUTER_API_KEY")
 
-    # Create vector database
-    vectorstore = create_vectorstore(docs, api_key)
-    retriever = vectorstore.as_retriever()
+# Load and process document
+documents = load_documents("data.txt")
+docs = split_documents(documents)
 
-    # Create LLM
-    llm = create_llm(api_key)
+# Create vector database
+vectorstore = create_vectorstore(docs, api_key)
+retriever = vectorstore.as_retriever()
 
-    query = "What is machine learning?"
+# Create LLM
+llm = create_llm(api_key)
 
-    # Retrieve context
+
+# -----------------------------
+# RAG Query Function
+# -----------------------------
+
+def ask_question(query):
+    """Search document and generate answer."""
+
     relevant_docs = retriever.invoke(query)
-    context = relevant_docs[0].page_content
+
+    # combine retrieved chunks
+    context = "\n".join([doc.page_content for doc in relevant_docs])
 
     prompt = f"""
-    Use the following context to answer the question.
+Use the following context to answer the question.
 
-    Context:
-    {context}
+Context:
+{context}
 
-    Question:
-    {query}
-    """
+Question:
+{query}
+"""
 
     response = llm.invoke(prompt)
 
+    return response.content
+
+
+# -----------------------------
+# Test Runner (optional)
+# -----------------------------
+
+def main():
+
+    query = "What is machine learning?"
+
+    answer = ask_question(query)
+
     print("\nAnswer:")
-    print(response.content)
+    print(answer)
 
 
 if __name__ == "__main__":
