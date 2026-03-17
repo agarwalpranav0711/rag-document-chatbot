@@ -1,25 +1,24 @@
 # AI Document Chatbot (RAG)
 ### LangChain + FAISS + OpenRouter + Streamlit
 
-This project implements a **Retrieval-Augmented Generation (RAG)** system that allows users to ask questions about a document through a **web interface**.
+🚀 An AI-powered document chatbot that allows users to **upload a file and ask questions about it** using Retrieval-Augmented Generation (RAG).
 
-The system searches the document for relevant context using **vector embeddings** and generates answers using an **LLM via OpenRouter**.
-
----
-
-## Features
-
-- Load documents from a text file
-- Split text into smaller chunks
-- Generate embeddings
-- Store embeddings in a FAISS vector database
-- Retrieve relevant context for a user query
-- Generate answers using an LLM
-- Interactive **Streamlit web interface**
+The system retrieves relevant information from the uploaded document and generates accurate answers using an LLM.
 
 ---
 
-## Tech Stack
+## ✨ Features
+
+- 📄 Upload your own text document
+- 💬 Chat-style interface (like ChatGPT)
+- 🔍 Semantic search using embeddings
+- 🧠 Answers generated using LLM (Llama 3 via OpenRouter)
+- ⚡ Fast retrieval using FAISS vector database
+- 🌐 Interactive web app using Streamlit
+
+---
+
+## 🛠 Tech Stack
 
 - Python
 - LangChain
@@ -30,14 +29,14 @@ The system searches the document for relevant context using **vector embeddings*
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
 ```
 rag-document-chatbot
 │
-├── app.py              # Streamlit UI
-├── main.py             # RAG pipeline
-├── data.txt            # Example document
+├── app.py              # Streamlit web app (UI + chat)
+├── main.py             # RAG pipeline (backend logic)
+├── data.txt            # Sample document
 ├── requirements.txt
 ├── README.md
 └── .gitignore
@@ -45,29 +44,33 @@ rag-document-chatbot
 
 ---
 
-## How the System Works
+## ⚙️ How It Works
 
 ```
-User Question
-      ↓
-Streamlit UI
-      ↓
-Retriever (FAISS Vector Search)
-      ↓
-Retrieve Relevant Document Chunks
-      ↓
-Send Context + Question to LLM
-      ↓
-Generate Answer
-      ↓
-Display in UI
+User uploads file
+        ↓
+Text is split into chunks
+        ↓
+Chunks → embeddings
+        ↓
+Stored in FAISS vector database
+        ↓
+User asks question
+        ↓
+Retriever finds relevant chunks
+        ↓
+Context sent to LLM
+        ↓
+LLM generates answer
+        ↓
+Answer displayed in chat UI
 ```
 
-This approach allows the LLM to answer questions **based on your document instead of general knowledge**.
+This ensures answers are based on the **uploaded document**, not general AI knowledge.
 
 ---
 
-## Installation
+## 🚀 Installation
 
 Clone the repository:
 
@@ -82,7 +85,7 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the project root:
+Create a `.env` file:
 
 ```
 OPENROUTER_API_KEY=your_api_key_here
@@ -90,15 +93,13 @@ OPENROUTER_API_KEY=your_api_key_here
 
 ---
 
-## Run the Application
-
-Start the Streamlit app:
+## ▶️ Run the App
 
 ```
 streamlit run app.py
 ```
 
-Open your browser and go to:
+Then open:
 
 ```
 http://localhost:8501
@@ -106,23 +107,20 @@ http://localhost:8501
 
 ---
 
-## Example Query
+## 💡 Example Usage
 
-Question:
+1. Upload a `.txt` file  
+2. Ask a question like:
 
 ```
 What is machine learning?
 ```
 
-Answer:
-
-```
-Machine learning is a subset of AI that allows systems to learn from data.
-```
+3. The chatbot will answer based on the document
 
 ---
 
-## Learning Goals
+## 🧠 Learning Concepts
 
 This project demonstrates:
 
@@ -134,17 +132,17 @@ This project demonstrates:
 
 ---
 
-## Future Improvements
+## 🚀 Future Improvements
 
-- Chat-style interface
-- Support for PDF documents
-- Upload documents via UI
-- Persistent vector database
-- Multi-document search
+- 📄 PDF support
+- 📂 Multiple file upload
+- 💾 Persistent vector database
+- 🌐 Deploy online (public access)
+- 🎨 Improved UI/UX
 
 ---
 
-## Author
+## 👨‍💻 Author
 
 **Pranav Agarwal**
 
