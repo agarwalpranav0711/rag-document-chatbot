@@ -5,15 +5,20 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-
+from langchain_community.document_loaders import PyPDFLoader
 
 # -----------------------------
 # Helper Functions
 # -----------------------------
 
 def load_documents(file_path: str):
-    """Load documents from a text file."""
-    loader = TextLoader(file_path)
+    """Load documents from TXT or PDF file."""
+
+    if file_path.endswith(".pdf"):
+        loader = PyPDFLoader(file_path)
+    else:
+        loader = TextLoader(file_path)
+
     return loader.load()
 
 
@@ -36,12 +41,11 @@ def create_vectorstore(docs, api_key):
     return FAISS.from_documents(docs, embeddings)
 
 
-def create_llm(api_key):
-    """Initialize the language model."""
+def create_llm(api_key, model_name):
     return ChatOpenAI(
         openai_api_key=api_key,
         openai_api_base="https://openrouter.ai/api/v1",
-        model="meta-llama/llama-3-8b-instruct"
+        model=model_name
     )
 
 
@@ -61,7 +65,7 @@ vectorstore = create_vectorstore(docs, api_key)
 retriever = vectorstore.as_retriever()
 
 # Create LLM
-llm = create_llm(api_key)
+llm = create_llm(api_key, "meta-llama/llama-3-8b-instruct")  # ✅ fixed
 
 
 # -----------------------------

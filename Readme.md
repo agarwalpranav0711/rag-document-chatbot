@@ -1,7 +1,8 @@
 # AI Document Chatbot (RAG)
+
 ### LangChain + FAISS + OpenRouter + Streamlit
 
-🚀 An AI-powered document chatbot that allows users to **upload a file and ask questions about it** using Retrieval-Augmented Generation (RAG).
+🚀 An AI-powered document chatbot that allows users to **upload TXT or PDF files and ask questions about them** using Retrieval-Augmented Generation (RAG).
 
 The system retrieves relevant information from the uploaded document and generates accurate answers using an LLM.
 
@@ -9,23 +10,24 @@ The system retrieves relevant information from the uploaded document and generat
 
 ## ✨ Features
 
-- 📄 Upload your own text document
-- 💬 Chat-style interface (like ChatGPT)
-- 🔍 Semantic search using embeddings
-- 🧠 Answers generated using LLM (Llama 3 via OpenRouter)
-- ⚡ Fast retrieval using FAISS vector database
-- 🌐 Interactive web app using Streamlit
+* 📄 Upload **TXT and PDF documents**
+* 💬 Chat-style interface (like ChatGPT)
+* 🧠 Conversation memory (context-aware responses)
+* 🔍 Semantic search using embeddings
+* 🤖 Multi-model support (switch between models)
+* ⚡ Fast retrieval using FAISS vector database
+* 🌐 Interactive web app using Streamlit
 
 ---
 
 ## 🛠 Tech Stack
 
-- Python
-- LangChain
-- FAISS (Vector Database)
-- OpenRouter API
-- Llama 3
-- Streamlit
+* Python
+* LangChain
+* FAISS (Vector Database)
+* OpenRouter API
+* Llama 3 / Mixtral
+* Streamlit
 
 ---
 
@@ -47,7 +49,7 @@ rag-document-chatbot
 ## ⚙️ How It Works
 
 ```
-User uploads file
+User uploads file (TXT / PDF)
         ↓
 Text is split into chunks
         ↓
@@ -59,7 +61,7 @@ User asks question
         ↓
 Retriever finds relevant chunks
         ↓
-Context sent to LLM
+Context + chat history sent to LLM
         ↓
 LLM generates answer
         ↓
@@ -109,14 +111,20 @@ http://localhost:8501
 
 ## 💡 Example Usage
 
-1. Upload a `.txt` file  
+1. Upload a `.txt` or `.pdf` file
 2. Ask a question like:
 
 ```
 What is machine learning?
 ```
 
-3. The chatbot will answer based on the document
+3. Ask follow-up questions:
+
+```
+Explain more
+```
+
+4. Switch models and compare answers
 
 ---
 
@@ -124,21 +132,24 @@ What is machine learning?
 
 This project demonstrates:
 
-- Retrieval-Augmented Generation (RAG)
-- Vector embeddings
-- Semantic search
-- LLM integration
-- Building AI web apps with Streamlit
+* Retrieval-Augmented Generation (RAG)
+* Vector embeddings
+* Semantic search
+* LLM integration
+* Conversational memory
+* Multi-model AI systems
+* Building AI web apps with Streamlit
 
 ---
 
 ## 🚀 Future Improvements
 
-- 📄 PDF support
-- 📂 Multiple file upload
-- 💾 Persistent vector database
-- 🌐 Deploy online (public access)
-- 🎨 Improved UI/UX
+* 📂 Multiple file upload
+* 💾 Persistent vector database
+* 📄 Show source references (page/chunk)
+* 🎨 Improved UI/UX
+* 🌐 Deploy online (public access)
+* 🖼️ Multimodal support (images)
 
 ---
 
@@ -146,5 +157,5 @@ This project demonstrates:
 
 **Pranav Agarwal**
 
-GitHub:  
+GitHub:
 https://github.com/agarwalpranav0711
