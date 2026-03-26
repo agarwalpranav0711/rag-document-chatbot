@@ -1,22 +1,23 @@
-# AI Document Chatbot (RAG)
+# 📚 AI Study Assistant (RAG)
 
 ### LangChain + FAISS + OpenRouter + Streamlit
 
-🚀 An AI-powered document chatbot that allows users to **upload TXT or PDF files and ask questions about them** using Retrieval-Augmented Generation (RAG).
+🚀 An AI-powered document chatbot that allows users to **upload TXT or PDF files and interact with them** using Retrieval-Augmented Generation (RAG).
 
-The system retrieves relevant information from the uploaded document and generates accurate answers using an LLM.
+It retrieves relevant information from the document and generates accurate, context-aware answers using LLMs.
 
 ---
 
 ## ✨ Features
 
-* 📄 Upload **TXT and PDF documents**
-* 💬 Chat-style interface (like ChatGPT)
-* 🧠 Conversation memory (context-aware responses)
+* 📄 Upload **TXT & PDF documents**
+* 💬 Chat with your document (ChatGPT-style UI)
+* 🧠 Conversation memory (context-aware answers)
 * 🔍 Semantic search using embeddings
-* 🤖 Multi-model support (switch between models)
-* ⚡ Fast retrieval using FAISS vector database
-* 🌐 Interactive web app using Streamlit
+* 🤖 Multi-model support (Llama 3, Mixtral)
+* 📘 One-click document summary
+* ⚡ Fast retrieval using FAISS
+* 🌐 Interactive web UI with Streamlit
 
 ---
 
@@ -36,8 +37,8 @@ The system retrieves relevant information from the uploaded document and generat
 ```
 rag-document-chatbot
 │
-├── app.py              # Streamlit web app (UI + chat)
-├── main.py             # RAG pipeline (backend logic)
+├── app.py              # Streamlit UI (chat + summary)
+├── main.py             # RAG backend logic
 ├── data.txt            # Sample document
 ├── requirements.txt
 ├── README.md
@@ -49,45 +50,36 @@ rag-document-chatbot
 ## ⚙️ How It Works
 
 ```
-User uploads file (TXT / PDF)
+User uploads file
         ↓
-Text is split into chunks
+Text split into chunks
         ↓
-Chunks → embeddings
+Embeddings created
         ↓
-Stored in FAISS vector database
+Stored in FAISS
         ↓
 User asks question
         ↓
-Retriever finds relevant chunks
+Retriever finds context
         ↓
-Context + chat history sent to LLM
+Context + chat history → LLM
         ↓
 LLM generates answer
-        ↓
-Answer displayed in chat UI
 ```
 
-This ensures answers are based on the **uploaded document**, not general AI knowledge.
+👉 Ensures answers are based on **your document**, not general AI knowledge.
 
 ---
 
 ## 🚀 Installation
 
-Clone the repository:
-
-```
+```bash
 git clone https://github.com/agarwalpranav0711/rag-document-chatbot.git
 cd rag-document-chatbot
-```
-
-Install dependencies:
-
-```
 pip install -r requirements.txt
 ```
 
-Create a `.env` file:
+Create `.env` file:
 
 ```
 OPENROUTER_API_KEY=your_api_key_here
@@ -95,13 +87,13 @@ OPENROUTER_API_KEY=your_api_key_here
 
 ---
 
-## ▶️ Run the App
+## ▶️ Run Locally
 
-```
+```bash
 streamlit run app.py
 ```
 
-Then open:
+Open:
 
 ```
 http://localhost:8501
@@ -112,44 +104,42 @@ http://localhost:8501
 ## 💡 Example Usage
 
 1. Upload a `.txt` or `.pdf` file
-2. Ask a question like:
+2. Ask:
 
 ```
 What is machine learning?
 ```
 
-3. Ask follow-up questions:
+3. Follow-up:
 
 ```
 Explain more
 ```
 
-4. Switch models and compare answers
+4. Generate summary
+5. Switch models and compare responses
 
 ---
 
-## 🧠 Learning Concepts
+## 🧠 What You Learn
 
-This project demonstrates:
-
-* Retrieval-Augmented Generation (RAG)
-* Vector embeddings
-* Semantic search
+* RAG (Retrieval-Augmented Generation)
+* Vector embeddings & semantic search
 * LLM integration
-* Conversational memory
-* Multi-model AI systems
-* Building AI web apps with Streamlit
+* Chat memory systems
+* Multi-model AI usage
+* Building AI web apps
 
 ---
 
 ## 🚀 Future Improvements
 
-* 📂 Multiple file upload
+* 📂 Multi-file support
 * 💾 Persistent vector database
-* 📄 Show source references (page/chunk)
-* 🎨 Improved UI/UX
-* 🌐 Deploy online (public access)
-* 🖼️ Multimodal support (images)
+* 📄 Show source references
+* 🎨 UI improvements
+* 🌐 Public deployment
+* 🖼️ Multimodal support
 
 ---
 

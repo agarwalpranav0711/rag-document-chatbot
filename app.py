@@ -4,90 +4,137 @@ from dotenv import load_dotenv
 
 from main import load_documents, split_documents, create_vectorstore, create_llm
 
-# Load API key
+# -----------------------------
+# Config
+# -----------------------------
+st.set_page_config(
+    page_title="AI Study Assistant",
+    page_icon="📚",
+    layout="wide"
+)
+
 load_dotenv()
 api_key = os.getenv("OPENROUTER_API_KEY")
 
-st.title("AI Document Chatbot")
+# -----------------------------
+# Header
+# -----------------------------
+st.markdown("# 📚 AI Study Assistant")
+st.caption("Upload notes → Ask questions → Get smart answers instantly 🚀")
 
-# Model selector
-model_option = st.selectbox(
-    "Choose AI Model",
-    [
-        "meta-llama/llama-3-8b-instruct",
-        "mistralai/mixtral-8x7b-instruct"
-    ]
-)
+st.divider()
 
-# -------------------------------
-# File Upload
-# -------------------------------
+# -----------------------------
+# Sidebar
+# -----------------------------
+with st.sidebar:
+    st.header("⚙️ Settings")
 
-uploaded_file = st.file_uploader(
-    "Upload a file",
-    type=["txt", "pdf"]
-)
+    model_option = st.selectbox(
+        "Choose AI Model",
+        [
+            "meta-llama/llama-3-8b-instruct",
+            "mistralai/mixtral-8x7b-instruct"
+        ]
+    )
 
+    uploaded_file = st.file_uploader(
+        "Upload file",
+        type=["txt", "pdf"]
+    )
+
+# -----------------------------
+# File Processing
+# -----------------------------
 if uploaded_file is not None:
 
-    # Save file with correct extension
     file_path = f"uploaded.{uploaded_file.name.split('.')[-1]}"
 
     with open(file_path, "wb") as f:
-        f.write(uploaded_file.read())
+        f.write(uploaded_file.getbuffer())
 
-    st.success("File uploaded successfully!")
+    st.toast("File uploaded successfully ✅")
+    st.caption(f"📄 Loaded: {uploaded_file.name}")
 
-    # Reset chat when new file uploaded
+    # reset chat
     st.session_state.messages = []
+    st.session_state.summary = None
 
-    # Process file
-    documents = load_documents(file_path)
-    docs = split_documents(documents)
+
+    with st.spinner("Processing document..."):
+
+        documents = load_documents(file_path)
+        docs = split_documents(documents)
+
+    # safety
+    if len(docs) == 0:
+        st.error("No readable content found in file ❌")
+        st.stop()
 
     vectorstore = create_vectorstore(docs, api_key)
     retriever = vectorstore.as_retriever()
+    llm = create_llm(api_key, model_option)
 
     st.session_state.retriever = retriever
+    st.session_state.llm = llm
+    st.session_state.docs = docs
 
-# -------------------------------
-# Chat Interface
-# -------------------------------
+# -----------------------------
+# Layout Sections
+# -----------------------------
+col1, col2 = st.columns([2, 1])
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# =============================
+# LEFT → CHAT AREA
+# =============================
+with col1:
 
-# Show old messages
-for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
-        st.write(msg["content"])
+    st.markdown("### 💬 Chat with your document")
 
-# Chat input
-user_input = st.chat_input("Ask a question about your document")
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            {"role": "assistant", "content": "👋 Upload a document and start asking questions!"}
+        ]
 
-if user_input:
+    # chat history
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
 
-    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.divider()
 
-    with st.chat_message("user"):
-        st.write(user_input)
+    user_input = st.chat_input("Ask anything about your document...")
 
-    with st.chat_message("assistant"):
+    if user_input:
 
-        if "retriever" in st.session_state:
+        st.session_state.messages.append(
+            {"role": "user", "content": user_input}
+        )
 
-            with st.spinner("Thinking..."):
+        with st.chat_message("user"):
+            st.write(user_input)
 
-                relevant_docs = st.session_state.retriever.invoke(user_input)
-                context = "\n".join([doc.page_content for doc in relevant_docs])
+        with st.chat_message("assistant"):
 
-                # Memory
-                chat_history = ""
-                for msg in st.session_state.messages:
-                    chat_history += f"{msg['role']}: {msg['content']}\n"
+            if "retriever" in st.session_state:
 
-                prompt = f"""
-You are a helpful AI assistant.
+                with st.spinner("Thinking..."):
+
+                    relevant_docs = st.session_state.retriever.invoke(user_input)
+
+                    context = "\n".join(
+                        [doc.page_content for doc in relevant_docs]
+                    )
+
+                    # memory
+                    chat_history = ""
+                    for msg in st.session_state.messages:
+                        chat_history += f"{msg['role']}: {msg['content']}\n"
+
+                    prompt = f"""
+You are an AI Study Assistant.
+
+Explain clearly like a teacher.
 
 Conversation history:
 {chat_history}
@@ -99,17 +146,63 @@ User question:
 {user_input}
 """
 
-                llm = create_llm(api_key, model_option)
-                response = llm.invoke(prompt)
-                answer = response.content
+                    response = st.session_state.llm.invoke(prompt)
+                    answer = response.content
 
-        else:
-            answer = "Please upload a file first."
+            else:
+                answer = "Please upload a file first."
 
-        st.markdown(f"🤖 **Model:** `{model_option}`")
-        st.write(answer)
+            st.markdown(f"🤖 **Model:** `{model_option}`")
+            st.markdown(answer)
 
-    st.session_state.messages.append({
-        "role": "assistant",
-        "content": f"[{model_option}] {answer}"
-    })
+        st.session_state.messages.append(
+            {"role": "assistant", "content": f"[{model_option}] {answer}"}
+        )
+
+# =============================
+# RIGHT → SUMMARY PANEL
+# =============================
+with col2:
+
+    st.markdown("### 📘 Document Summary")
+
+    if "docs" in st.session_state:
+
+        if st.button("✨ Generate Summary", use_container_width=True):
+            
+
+            with st.spinner("Generating summary..."):
+                
+
+                full_text = "\n".join(
+                    [doc.page_content for doc in st.session_state.docs[:20]]
+                )
+
+                prompt = f"""
+Summarize the following document in simple terms:
+
+{full_text}
+"""
+
+                response = st.session_state.llm.invoke(prompt)
+                summary = response.content
+                st.session_state.summary = summary
+
+                st.markdown(
+                    f"""
+                    <div style="
+                        background-color:#1e293b;
+                        padding:20px;
+                        border-radius:12px;
+                        border:1px solid #334155;
+                        font-size:14px;
+                        line-height:1.6;
+                    ">
+                    {summary}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+    else:
+        st.info("Upload a file to enable summary.")
