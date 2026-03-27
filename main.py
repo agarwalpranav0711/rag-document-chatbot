@@ -60,5 +60,6 @@ def create_llm(api_key, model_name):
     return ChatOpenAI(
         openai_api_key=api_key,
         openai_api_base="https://openrouter.ai/api/v1",
-        model=model_name
+        model=model_name,
+        max_tokens=300  # 🔥 LIMIT COST
     )

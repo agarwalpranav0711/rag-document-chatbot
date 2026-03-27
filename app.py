@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import time
 from dotenv import load_dotenv
 
 from main import load_documents, split_documents, create_vectorstore, create_llm
@@ -15,6 +16,17 @@ st.set_page_config(
 
 load_dotenv()
 api_key = os.getenv("OPENROUTER_API_KEY")
+
+# -----------------------------
+# Usage Control (🔥 IMPORTANT)
+# -----------------------------
+if "query_count" not in st.session_state:
+    st.session_state.query_count = 0
+
+MAX_QUERIES = 10
+
+if "last_query_time" not in st.session_state:
+    st.session_state.last_query_time = 0
 
 # -----------------------------
 # Header
@@ -60,15 +72,12 @@ if uploaded_file is not None:
     st.session_state.messages = []
     st.session_state.summary = None
 
-
     with st.spinner("Processing document..."):
-
         documents = load_documents(file_path)
         docs = split_documents(documents)
 
-    # safety
     if len(docs) == 0:
-        st.error("No readable content found in file ❌")
+        st.error("No readable content found ❌")
         st.stop()
 
     vectorstore = create_vectorstore(docs, api_key)
@@ -80,12 +89,12 @@ if uploaded_file is not None:
     st.session_state.docs = docs
 
 # -----------------------------
-# Layout Sections
+# Layout
 # -----------------------------
 col1, col2 = st.columns([2, 1])
 
 # =============================
-# LEFT → CHAT AREA
+# CHAT
 # =============================
 with col1:
 
@@ -96,7 +105,6 @@ with col1:
             {"role": "assistant", "content": "👋 Upload a document and start asking questions!"}
         ]
 
-    # chat history
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.write(msg["content"])
@@ -106,6 +114,19 @@ with col1:
     user_input = st.chat_input("Ask anything about your document...")
 
     if user_input:
+
+        # 🔥 LIMIT CHECK
+        if st.session_state.query_count >= MAX_QUERIES:
+            st.warning("⚠️ Free limit reached. Refresh to continue.")
+            st.stop()
+
+        # 🔥 RATE LIMIT
+        if time.time() - st.session_state.last_query_time < 3:
+            st.warning("⏳ Please wait before next request")
+            st.stop()
+
+        st.session_state.last_query_time = time.time()
+        st.session_state.query_count += 1
 
         st.session_state.messages.append(
             {"role": "user", "content": user_input}
@@ -122,11 +143,11 @@ with col1:
 
                     relevant_docs = st.session_state.retriever.invoke(user_input)
 
+                    # 🔥 LIMIT CONTEXT (COST CONTROL)
                     context = "\n".join(
-                        [doc.page_content for doc in relevant_docs]
+                        [doc.page_content for doc in relevant_docs[:3]]
                     )
 
-                    # memory
                     chat_history = ""
                     for msg in st.session_state.messages:
                         chat_history += f"{msg['role']}: {msg['content']}\n"
@@ -160,7 +181,7 @@ User question:
         )
 
 # =============================
-# RIGHT → SUMMARY PANEL
+# SUMMARY
 # =============================
 with col2:
 
@@ -169,13 +190,19 @@ with col2:
     if "docs" in st.session_state:
 
         if st.button("✨ Generate Summary", use_container_width=True):
-            
+
+            # 🔥 LIMIT CHECK
+            if st.session_state.query_count >= MAX_QUERIES:
+                st.warning("⚠️ Limit reached.")
+                st.stop()
+
+            st.session_state.query_count += 1
 
             with st.spinner("Generating summary..."):
-                
 
+                # 🔥 LIMIT TEXT SIZE
                 full_text = "\n".join(
-                    [doc.page_content for doc in st.session_state.docs[:20]]
+                    [doc.page_content for doc in st.session_state.docs[:10]]
                 )
 
                 prompt = f"""
