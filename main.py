@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
-
+import whisper
+from langchain_core.documents import Document
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_text_splitters import CharacterTextSplitter
@@ -16,18 +17,34 @@ api_key = os.getenv("OPENROUTER_API_KEY")
 # Load Documents
 # -----------------------------
 def load_documents(file_path: str):
-    """Load documents from TXT or PDF file."""
+    """Load documents from TXT, PDF, or AUDIO"""
 
     if file_path.endswith(".pdf"):
         loader = PyPDFLoader(file_path)
         docs = loader.load()
-        # remove empty pages
         docs = [doc for doc in docs if doc.page_content.strip() != ""]
+        return docs
+
+    elif file_path.endswith(".mp3") or file_path.endswith(".wav"):
+        return load_audio(file_path)
+
     else:
         loader = TextLoader(file_path)
-        docs = loader.load()
+        return loader.load()
 
-    return docs
+def load_audio(file_path: str):
+    """Convert audio file to Document using Whisper"""
+
+    model = whisper.load_model("tiny")  # fast model
+    result = model.transcribe(file_path)
+
+    text = result["text"]
+
+    # 🚨 IMPORTANT: convert to Document
+    if text.strip() == "":
+        return []
+
+    return [Document(page_content=text)]
 
 
 # -----------------------------

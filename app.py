@@ -52,7 +52,7 @@ with st.sidebar:
 
     uploaded_file = st.file_uploader(
         "Upload file",
-        type=["txt", "pdf"]
+        type=["txt", "pdf", "mp3", "wav"]
     )
 
 # -----------------------------
@@ -72,7 +72,7 @@ if uploaded_file is not None:
     st.session_state.messages = []
     st.session_state.summary = None
 
-    with st.spinner("Processing document..."):
+    with st.spinner("Processing document/audio..."):
         documents = load_documents(file_path)
         docs = split_documents(documents)
 
